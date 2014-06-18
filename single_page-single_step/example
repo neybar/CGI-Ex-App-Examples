@@ -1,0 +1,76 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use v5.16;
+
+use base("CGI::Ex::App");
+use Data::Debug; #What?  You've never heard of Data::Debug?  Well I quite like it...
+
+__PACKAGE__->navigate;
+
+exit;
+
+#sub post_navigate { debug shift->dump_history }
+
+sub main_hash_swap {
+    my $self = shift;
+    my $form = $self->form;
+    my $hash = {};
+
+    $hash;
+}
+
+sub main_hash_validation {
+    return {
+        'general no_alert'   => 1,
+        'general no_confirm' => 1,
+        name => {
+            required    => 1,
+            match       => 'm/^\w+$/', #word characters please
+            match_error => 'Please enter only letters and numbers',
+        }
+    }
+}
+
+sub main_finalize {
+    my $self = shift;
+    my $form = $self->form;
+
+    my $name = $form->{'name'};
+
+    #I arbitrarily despise "Billy"
+    if (lc $name eq 'billy') {
+        $self->add_errors( name => 'Billy isn\'t allowed here!' );
+        delete $form->{'name'}; #And don't show your face around here again...
+        return 0;
+    }
+
+    #Tell CGI::Ex::App that you've handled the data submission, and to not try to
+    #finalize again this session.
+    $self->set_ready_validate(0);
+
+    #This return value doesn't indicate if finalizing the data was successful or not
+    #it tells CGI::Ex::App whether it should try to go to the next step.
+    #main will always resolve to main, So returning 0 or 1 isn't very meaningful
+    return 1;
+}
+
+sub main_file_print {
+\qq{<html>
+    <head>
+        <title>Test</title>
+        <style>
+            .error { color:red; }
+        </style>
+    </head>
+    <body>
+        <form name='[% form_name %]' action='[% script_name %]' method='post'>
+            <p><label for='name'>What is your name?</label> <input type='text' name='name'> <input type='submit' value='Submit'></p>
+            <span class='error' id='name_error'>[% name_error %]</span>
+        </form>
+        [% IF name %]<p>Hello [% name %]</p>[% END %]
+        [% js_validation %]
+    </body>
+</html>}}
