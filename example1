@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use v5.16;
+
+use base qw(CGI::Ex::App);
+use Data::Debug;
+
+__PACKAGE__->navigate;
+
+exit;
+
+sub file_print { \"Hello World" }
+
