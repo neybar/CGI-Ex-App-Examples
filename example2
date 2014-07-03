@@ -6,7 +6,7 @@ use warnings;
 use v5.16;
 
 use base("CGI::Ex::App");
-use Data::Debug; #What?  You've never heard of Data::Debug?  Well I quite like it...
+use Data::Debug;
 
 __PACKAGE__->navigate;
 
@@ -14,22 +14,24 @@ exit;
 
 #sub post_navigate { debug shift->dump_history }
 
-sub main_hash_swap {
-    my $self = shift;
-    my $form = $self->form;
-    my $hash = {};
-
-    $hash;
-}
+#sub main_hash_swap {
+#    my $self = shift;
+#    my $form = $self->form;
+#    my $hash = {};
+#
+#    $hash;
+#}
 
 sub main_hash_validation {
     return {
-        'general no_alert'   => 1,
-        'general no_confirm' => 1,
+        'group no_alert'   => 1,
+        'group no_confirm' => 1,
         name => {
             required    => 1,
             match       => 'm/^\w+$/', #word characters please
             match_error => 'Please enter only letters and numbers',
+            min_len     => 2,
+            max_len     => 50,
         }
     }
 }
@@ -53,7 +55,8 @@ sub main_finalize {
 
     #This return value doesn't indicate if finalizing the data was successful or not
     #it tells CGI::Ex::App whether it should try to go to the next step.
-    #main will always resolve to main, So returning 0 or 1 isn't very meaningful
+    #main will always resolve to main, So returning 0 or 1 for this exact situation
+    #doesn't matter much.  You will always show the main step.
     return 1;
 }
 
